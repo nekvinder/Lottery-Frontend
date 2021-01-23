@@ -1,4 +1,4 @@
-# lottery Frontend - Banks List
+# Lottery Frontend 
 
 This project is hosted live at [MY AWS Cloud Instance](http://nekvinder.com/firecompass).
 
