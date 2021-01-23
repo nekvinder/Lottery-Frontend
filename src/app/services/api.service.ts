@@ -10,7 +10,7 @@ import { ApiResponse, Lobby, Lottery, User } from '../models/types';
 export class ApiService {
   constructor(private http: HttpClient) {}
   // apiUrl = 'https://radiant-oasis-80551.herokuapp.com/';
-  apiUrl = 'http://127.0.0.1:8000/';
+  apiUrl = 'https://nekvinder.com:8008/';
 
   cache = {};
 

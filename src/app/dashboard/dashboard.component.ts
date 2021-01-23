@@ -31,7 +31,7 @@ export class DashboardComponent implements OnInit {
   get totalAmt() {
     let i = 0;
     this.lottries.forEach((element) => {
-      i += parseFloat(element.houseChargeAmount) ?? 0;
+      i += parseFloat(element.houseChargeAmount.toString()) ?? 0;
     });
     return i;
   }
