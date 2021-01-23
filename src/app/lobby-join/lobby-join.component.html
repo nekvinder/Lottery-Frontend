@@ -1,1 +1,175 @@
-<p>lobby-join works!</p>
+<h1 class="card-title">Users can join and start playing lottery</h1>
+
+<div *ngIf="lobby && lottery">
+  <div class="row align-items-center my-2">
+    <div class="col align-self-center">
+      <form>
+        <div class="row">
+          <div class="mb-3" class="col-6">
+            <label class="form-label">Lobby's Name</label>
+            <input
+              type="text"
+              disabled
+              class="form-control"
+              [value]="lobby.name"
+            />
+          </div>
+          <div class="mb-3" class="col-6">
+            <label class="form-label">Capacity</label>
+            <input
+              type="text"
+              disabled
+              class="form-control"
+              [value]="lobby.capacity"
+            />
+          </div>
+          <div class="mb-3" class="col-6">
+            <label class="form-label">Entry fee</label>
+            <input
+              type="text"
+              disabled
+              class="form-control"
+              [value]="lobby.entryFee"
+            />
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+  <a
+    class="btn float-right text-right-align btn-danger btn-sm"
+    [routerLink]="'/lobby'"
+    >Go Back
+  </a>
+
+  <button
+    *ngIf="!lottery.winner"
+    class="btn mx-2 float-right text-right-align btn-success btn-sm"
+    (click)="playLottery()"
+    [disabled]="lobby.capacity - participants?.length"
+  >
+    Play
+    <span *ngIf="lobby.capacity - participants?.length">
+      ({{ lobby.capacity - participants?.length }} remaining)
+    </span>
+  </button>
+  <div>
+    <h2>Participants({{ lobby.capacity - participants?.length }} remaining)</h2>
+
+    <div class="row">
+      <div class="col">
+        <div class="table-responsive table-wrap">
+          <table class="table table-bordered table-striped">
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Name</th>
+                <th scope="col">Balance</th>
+                <th *ngIf="!lottery.winner" scope="col">Remove</th>
+              </tr>
+            </thead>
+            <tbody *ngIf="loading">
+              <div class="text-center">
+                <div class="spinner-border" role="status">
+                  <span class="sr-only">Loading...</span>
+                </div>
+              </div>
+            </tbody>
+            <tbody>
+              <tr *ngFor="let participant of participants; index as i">
+                <th scope="row">
+                  {{ (page - 1) * pageSize + i + 1 }}
+                </th>
+                <td>
+                  {{ participant.username }}
+                  <span
+                    *ngIf="lottery.winner == participant.id"
+                    class="material-icons"
+                    [ngClass]="{ favourite: true }"
+                  >
+                    card_giftcard
+                  </span>
+                </td>
+                <td>
+                  {{ participant.balance }}
+                </td>
+                <td *ngIf="!lottery.winner">
+                  <button
+                    placement="top"
+                    (click)="removeParticipant(participant)"
+                    class="btn btn-link"
+                  >
+                    <span
+                      class="material-icons"
+                      [ngClass]="{ favourite: true }"
+                    >
+                      delete
+                    </span>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="!lottery.winner">
+    <h2>Users</h2>
+    <div class="row">
+      <div class="col">
+        <div class="table-responsive table-wrap">
+          <table class="table table-bordered table-striped">
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Name</th>
+                <th scope="col">Balance</th>
+                <th scope="col">Add</th>
+              </tr>
+            </thead>
+            <tbody *ngIf="loading">
+              <div class="text-center">
+                <div class="spinner-border" role="status">
+                  <span class="sr-only">Loading...</span>
+                </div>
+              </div>
+            </tbody>
+            <tbody>
+              <tr *ngFor="let user of users; index as i">
+                <th scope="row">
+                  {{ (page - 1) * pageSize + i + 1 }}
+                </th>
+                <td>
+                  <a>{{ user.username }} </a>
+                </td>
+                <td>
+                  {{ user.balance }}
+                </td>
+                <td>
+                  <a
+                    placement="top"
+                    ngbTooltip="Play Lottery"
+                    (click)="addParticipant(user)"
+                    class="btn btn-link"
+                  >
+                    <span
+                      class="material-icons"
+                      [ngClass]="{
+                        favourite: lobby.isRunning,
+                        notfavourite: !lobby.isRunning
+                      }"
+                    >
+                      add
+                    </span>
+                  </a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

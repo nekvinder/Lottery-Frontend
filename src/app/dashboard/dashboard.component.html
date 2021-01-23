@@ -1,0 +1,58 @@
+<h1 class="card-title">Played Lottries</h1>
+<div class="row">
+  <div class="col">
+    <div class="table-responsive table-wrap">
+      <table class="table table-bordered table-striped">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Lottery No.</th>
+            <th scope="col">Lobby Name</th>
+            <th scope="col">House charge collected</th>
+            <th scope="col">Participants</th>
+            <th scope="col">Winner</th>
+          </tr>
+        </thead>
+        <tbody *ngIf="loading">
+          <div class="text-center">
+            <div class="spinner-border" role="status">
+              <span class="sr-only">Loading...</span>
+            </div>
+          </div>
+        </tbody>
+        <tbody>
+          <tr *ngFor="let lottry of lottries; index as i">
+            <th scope="row">
+              {{ i + 1 }}
+            </th>
+            <td>
+              <a>
+                {{ lottry.id }}
+              </a>
+            </td>
+            <td>
+              {{ getLobby(lottry.lobby).name }}
+            </td>
+            <td>
+              {{ lottry.houseChargeAmount }}
+            </td>
+            <td>
+              <span
+                *ngFor="let user of lottry.participants; index as i"
+                class="badge badge-xl badge-info"
+                >{{ getUser(user)?.username }}</span
+              >
+            </td>
+            <td>
+              {{ getUser(lottry.winner)?.username }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <h2>
+        Total amount collected so far :
+        <span class="badge badge-success">Rs-{{ totalAmt }}</span>
+      </h2>
+    </div>
+  </div>
+</div>

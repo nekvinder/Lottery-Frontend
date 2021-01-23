@@ -1,25 +1,8 @@
-<h1 class="card-title">Bank Branches</h1>
+<h1 class="card-title">Available Lobbies</h1>
 <div class="row align-items-center my-2">
   <div class="col align-self-center">
     <form>
       <div class="row align-items-center">
-        <div class="col-lg-2 col-md-12 align-self-center my-2">
-          <div
-            class="btn-group btn-group-toggle"
-            ngbRadioGroup
-            (change)="refreshBranches()"
-            name="radioBasic"
-            [(ngModel)]="model"
-          >
-            <label ngbButtonLabel class="btn-primary">
-              <input ngbButton type="radio" value="All" /> Show All
-            </label>
-            <label ngbButtonLabel class="btn-primary">
-              <input ngbButton type="radio" value="Favourites" /> Show
-              Favourites
-            </label>
-          </div>
-        </div>
         <div class="col-lg-6 col-md-6 align-self-center">
           <input
             placeholder="Full text search:"
@@ -28,25 +11,11 @@
             [formControl]="filter"
           />
         </div>
-        <div *ngIf="model == 'All'" class="col-lg-4 col-md-6 align-self-center">
-          <select
-            [formControl]="city"
-            (change)="refreshBranches()"
-            class="form-control form-control"
-          >
-            <option
-              *ngFor="
-                let i of ['Mumbai', 'Noida', 'Delhi', 'Pune', 'Bangalore']
-              "
-            >
-              {{ i }}
-            </option>
-          </select>
-        </div>
       </div>
     </form>
   </div>
 </div>
+
 <div class="row">
   <div class="col">
     <div class="table-responsive table-wrap">
@@ -54,14 +23,10 @@
         <thead>
           <tr>
             <th scope="col">#</th>
-            <th scope="col">Bank</th>
-            <th scope="col">IFSC</th>
-            <th scope="col">Branch</th>
-            <th scope="col">Address</th>
-            <th scope="col">City</th>
-            <th scope="col">District</th>
-            <th scope="col">State</th>
-            <th scope="col">Action</th>
+            <th scope="col">Name</th>
+            <th scope="col">Capacity</th>
+            <th scope="col">Entry Fee</th>
+            <th scope="col">Play Lottery</th>
           </tr>
         </thead>
         <tbody *ngIf="loading">
@@ -71,109 +36,51 @@
             </div>
           </div>
         </tbody>
-        <tbody *ngIf="!loading">
-          <tr *ngFor="let branch of branches$ | async; index as i">
-            <th *ngIf="model == 'All'" scope="row">
+        <tbody>
+          <tr *ngFor="let lobby of lobbyList$ | async; index as i">
+            <th scope="row">
               {{ (page - 1) * pageSize + i + 1 }}
             </th>
-            <th *ngIf="model == 'Favourites'" scope="row">
-              {{ i + 1 }}
-            </th>
             <td>
-              <a [routerLink]="'/banks/' + branch.ifsc">
+              <a>
                 <ngb-highlight
-                  [result]="branch.bank"
+                  [result]="lobby.name"
                   [term]="filter.value"
                 ></ngb-highlight>
               </a>
             </td>
             <td>
               <ngb-highlight
-                [result]="branch.ifsc"
+                [result]="lobby.capacity"
                 [term]="filter.value"
               ></ngb-highlight>
             </td>
             <td>
               <ngb-highlight
-                [result]="branch.branch"
+                [result]="lobby.entryFee"
                 [term]="filter.value"
               ></ngb-highlight>
             </td>
             <td>
-              <ngb-highlight
-                [result]="branch.address"
-                [term]="filter.value"
-              ></ngb-highlight>
-            </td>
-            <td>
-              <ngb-highlight
-                [result]="branch.city"
-                [term]="filter.value"
-              ></ngb-highlight>
-            </td>
-            <td>
-              <ngb-highlight
-                [result]="branch.district"
-                [term]="filter.value"
-              ></ngb-highlight>
-            </td>
-            <td>
-              <ngb-highlight
-                [result]="branch.state"
-                [term]="filter.value"
-              ></ngb-highlight>
-            </td>
-            <td>
-              <button
+              <a
                 placement="top"
-                ngbTooltip="Add to favourites"
-                type="button"
-                (click)="addToFav(branch)"
+                ngbTooltip="Play Lottery"
+                [routerLink]="routerLinks[lobby.id]"
                 class="btn btn-link"
               >
                 <span
                   class="material-icons"
                   [ngClass]="{
-                    favourite: branch.favourite,
-                    notfavourite: !branch.favourite
+                    favourite: true
                   }"
                 >
-                  star_rate
+                  play_arrow
                 </span>
-              </button>
+              </a>
             </td>
           </tr>
         </tbody>
       </table>
-    </div>
-  </div>
-</div>
-
-<div *ngIf="model == 'All'" class="row align-middle align-items-center my-2">
-  <div class="col-12 align-self-center">
-    <div class="d-flex justify-content-center">
-      <ngb-pagination
-        [collectionSize]="collectionSize"
-        [(page)]="page"
-        [pageSize]="pageSize"
-        (pageChange)="refreshBranches()"
-        [maxSize]="7"
-        [rotate]="true"
-      >
-      </ngb-pagination>
-    </div>
-  </div>
-
-  <div class="col-12 align-middle btn align-self-center">
-    Show Records:
-    <div class="col-2 align-middle btn align-self-center">
-      <select
-        [formControl]="pageSizeCtrl"
-        (change)="refreshBranches()"
-        class="form-control form-control"
-      >
-        <option *ngFor="let i of [10, 20, 50, 100]">{{ i }}</option>
-      </select>
     </div>
   </div>
 </div>

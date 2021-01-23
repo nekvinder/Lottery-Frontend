@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { ApiResponse, Lobby, Lottery, User } from '../models/types';
 
 @Injectable({
@@ -9,51 +10,37 @@ import { ApiResponse, Lobby, Lottery, User } from '../models/types';
 export class ApiService {
   constructor(private http: HttpClient) {}
   // apiUrl = 'https://radiant-oasis-80551.herokuapp.com/';
-  apiUrl = '127.0.0.1:8000/';
+  apiUrl = 'http://127.0.0.1:8000/';
 
   cache = {};
 
-  // getBranches(
-  //   offset: number,
-  //   limit: number,
-  //   city?: string
-  // ): Observable<ApiResponse<Branch>> {
-  //   return this.getApiResponse<Branch>(
-  //     this.apiUrl +
-  //       `branches/?offset=${offset}&limit=${limit}` +
-  //       (city ? `&city=${city.toUpperCase()}` : '')
-  //   );
-  // }
-
-  // getBranch(ifsc: string): Observable<Branch> {
-  //   if (this.cache[ifsc]) {
-  //     return this.cache[ifsc];
-  //   }
-
-  //   this.cache[ifsc] = this.http
-  //     .get<Branch>(this.apiUrl + `branches/${ifsc}/`)
-  //     .pipe(
-  //       shareReplay(1),
-  //       catchError((err) => {
-  //         delete this.cache[ifsc];
-  //         return null;
-  //       })
-  //     );
-
-  //   return this.cache[ifsc];
-  // }
-
-  getUserList(offset: number, limit: number): Observable<ApiResponse<User>> {
+  getUserList(
+    offset: number = 0,
+    limit: number = 1000
+  ): Observable<ApiResponse<User>> {
     return this.getApiResponse<User>(
       this.apiUrl + `user/?offset=${offset}&limit=${limit}`
     );
+  }
+
+  async getUserListById(ids: number[]): Promise<User[]> {
+    const ret: User[] = [];
+    for (const id of ids) ret.push(await this.getUser(id).toPromise());
+    return ret;
   }
 
   getUser(id: number): Observable<User> {
     return this.http.get<User>(this.apiUrl + `user/${id}/`);
   }
 
-  getLobbyList(offset: number, limit: number): Observable<ApiResponse<Lobby>> {
+  updateUser(data: User): Observable<User> {
+    return this.http.patch<User>(this.apiUrl + `user/${data.id}/`, data);
+  }
+
+  getLobbyList(
+    offset: number = 0,
+    limit: number = 1000
+  ): Observable<ApiResponse<Lobby>> {
     return this.getApiResponse<Lobby>(
       this.apiUrl + `lobby/?offset=${offset}&limit=${limit}`
     );
@@ -61,17 +48,35 @@ export class ApiService {
   getLobby(id: number): Observable<Lobby> {
     return this.http.get<Lobby>(this.apiUrl + `lobby/${id}/`);
   }
+  updateLobby(data: Lobby): Observable<Lobby> {
+    return this.http.patch<Lobby>(this.apiUrl + `lobby/${data.id}/`, data);
+  }
 
   getLotteryList(
-    offset: number,
-    limit: number
+    offset: number = 0,
+    limit: number = 1000
   ): Observable<ApiResponse<Lottery>> {
     return this.getApiResponse<Lottery>(
       this.apiUrl + `lottery/?offset=${offset}&limit=${limit}`
     );
   }
+
   getLottery(id: number): Observable<Lottery> {
-    return this.http.get<Lottery>(this.apiUrl + `user/${id}/`);
+    return this.http.get<Lottery>(this.apiUrl + `lottery/${id}/`);
+  }
+
+  updateLottery(data: Lottery): Observable<Lottery> {
+    return this.http.patch<Lottery>(this.apiUrl + `lottery/${data.id}/`, data);
+  }
+
+  getRunningLotteryByLobby(lobby: Lobby): Observable<ApiResponse<Lottery>> {
+    return this.getApiResponse<Lottery>(
+      this.apiUrl + `lottery/?lobby=${lobby.id}&limit=1`
+    );
+  }
+
+  createLottery(lottery: Lottery): Observable<Lottery> {
+    return this.http.post<Lottery>(this.apiUrl + `lottery/`, lottery);
   }
 
   getApiResponse<T>(url: string): Observable<ApiResponse<T>> {
